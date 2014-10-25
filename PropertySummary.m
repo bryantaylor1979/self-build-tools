@@ -20,6 +20,7 @@ classdef PropertySummary < handle
     % Sub Componets: ProjectCostEstimater, PropertiesDetails_LUT
     properties (SetObservable = true)
         INPUTS
+        RootPath = 'C:\git\self-build-tools\'
         Name = 'Isaacson Road - Burwell';
         Contingency = 0.06; %NOT linked.
         OUTPUTS
@@ -44,7 +45,10 @@ classdef PropertySummary < handle
             %%
             close all
             clear classes
-            obj = PropertySummary()
+            obj = PropertySummary('RootPath','C:\git\self-build-tools\')
+            obj.RUN()
+            
+            %%
             ObjectInspector(obj)
         end
         function RUN(obj)
@@ -71,9 +75,15 @@ classdef PropertySummary < handle
         end
     end
     methods (Hidden = true)
-        function obj = PropertySummary()
+        function obj = PropertySummary(varargin)
             %%
-            obj.ProjectCost_OBJ = ProjectCostEstimater;
+            x = size(varargin,2);
+            for i = 1:2:x
+               obj.(varargin{i}) = varargin{i+1};
+            end
+           
+            %%
+            obj.ProjectCost_OBJ = ProjectCostEstimater('RootPath',obj.RootPath);
             obj.PropertiesDetails_LUT = PropertiesDetails_LUT;
             obj.Name_LUT = obj.PropertiesDetails_LUT.Name_LUT;
         end

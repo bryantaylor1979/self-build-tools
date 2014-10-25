@@ -8,6 +8,7 @@ classdef ProjectCostEstimater < handle
     % Sub Components: BuildCosts_withAdj
     properties (SetObservable = true)
        INPUTS
+       RootPath = 'C:\git\self-build-tools\'
        Name = 'The Willows - Highfields Caldecote';
        Contingency = 0.06;
        LandCost = 130000
@@ -71,8 +72,12 @@ classdef ProjectCostEstimater < handle
         end
     end
     methods (Hidden = true)
-        function obj = ProjectCostEstimater()
-            obj.BuildCost_OBJ = BuildCosts_withAdj();
+        function obj = ProjectCostEstimater(varargin)
+            x = size(varargin,2);
+            for i = 1:2:x
+               obj.(varargin{i}) = varargin{i+1};
+            end
+            obj.BuildCost_OBJ = BuildCosts_withAdj('RootPath',obj.RootPath);
             obj.StampDutyCalculator_OBJ = StampDutyCalculator();
         end
     end

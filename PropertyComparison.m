@@ -1,7 +1,10 @@
 classdef PropertyComparison <  handle
     properties (SetObservable = true)
+        RootPath = 'C:\git\self-build-tools\';
+        Enable_MortgageLoan_Estimator = false;
+        Manual_EstimateProjectBudget = 350000;
         BuildContingency = 0.06; %
-        TargetMargin = 0.10; %
+        TargetMargin = 0.30; %
         MaxDistance = Inf;
         FilterOnProjectBudget = 'no';
         EstimateProjectBudget
@@ -25,13 +28,17 @@ classdef PropertyComparison <  handle
             close all
             clear classes
             %%
-            obj = PropertyComparison;
+            obj = PropertyComparison('RootPath','C:\git\self-build-tools\')
             %%
             ObjectInspector(obj)
         end
         function RUN(obj)
-            obj.MortgageEstimator_OBJ.RUN(); 
-            obj.EstimateProjectBudget = obj.MortgageEstimator_OBJ.EstimateProjectBudget;     
+            if obj.Enable_MortgageLoan_Estimator == true
+                obj.MortgageEstimator_OBJ.RUN(); 
+                obj.EstimateProjectBudget = obj.MortgageEstimator_OBJ.EstimateProjectBudget; 
+            else
+                obj.EstimateProjectBudget = obj.Manual_EstimateProjectBudget
+            end
             NAMES = {   'Name'; ...
                         'Available'; ...
                         'SalePrice'; ...
@@ -57,11 +64,17 @@ classdef PropertyComparison <  handle
         end
     end
     methods (Hidden = true)
-        function obj = PropertyComparison()
+        function obj = PropertyComparison(varargin)
             %%
+            x = size(varargin,2);
+            for i = 1:2:x
+               obj.(varargin{i}) = varargin{i+1};
+            end
             obj.handles.DataSetFiltering2 = DataSetFiltering2;
-            obj.MortgageEstimator_OBJ = MortgageLoanEstimation;
-            obj.LUT_OBJ = PropertySummary();
+            if obj.Enable_MortgageLoan_Estimator == true
+                obj.MortgageEstimator_OBJ = MortgageLoanEstimation;
+            end
+            obj.LUT_OBJ = PropertySummary('RootPath',obj.RootPath)
             obj.PropertyNames = obj.LUT_OBJ.Name_LUT;
         end
         function struct = GetValues(obj,object,PropertyNames,NAMES)

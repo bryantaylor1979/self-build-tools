@@ -1,6 +1,6 @@
 classdef BuildCosts <  handle
     properties (SetObservable = true)
-        Path = 'C:\sourcecode\selfBuild\BuildCosts\BuildCostTables\SubComponets\';
+        RootPath = 'C:\sourcecode\selfBuild\';
         filename = 'AverageBuildCostTables.xlsx';
         BuildRoute = 'D';
         Location = 'South-East'
@@ -10,7 +10,7 @@ classdef BuildCosts <  handle
         CostPerSqMeter
         BuildCost
     end
-    properties (Hidden = true)
+    properties (Hidden = true,SetObservable = true)
         Location_LUT = {    'Greater London'; ...
                             'South-East'; ...
                             'NW, SW, East & Scotland'; ...
@@ -47,7 +47,11 @@ classdef BuildCosts <  handle
         end
     end
     methods (Hidden = true)
-        function obj = BuildCosts()
+        function obj = BuildCosts(varargin)
+           x = size(varargin,2);
+           for i = 1:2:x
+               obj.(varargin{i}) = varargin{i+1};
+           end
         end
         function Val = LUT_Table(obj,raw,NumberOfStories,FloorArea,BuildRoute,Location,ExpectedLevelOfSpecification)
             %% decode number of stories
@@ -71,7 +75,11 @@ classdef BuildCosts <  handle
             Val = obj.ExtractBasedStandard(DATA3,ExpectedLevelOfSpecification);            
         end
         function raw = ReadXLS(obj,filename)
-            [raw] =  xlsread(   [obj.Path,obj.filename] );
+            try
+            [raw] =  xlsread(   [obj.RootPath,'BuildCostTables\SubComponets\',obj.filename] );
+            catch
+            [raw] =  xlsread(   [obj.RootPath,'BuildCostTables\SubComponets\',obj.filename(1:end-1)] );    
+            end
         end
         function [Range, RangeDATA] = ExtractFloorRange(obj,singlestorey,FloorArea)
             %% extract ranges

@@ -1,6 +1,7 @@
 classdef BuildCosts_withAdj < handle
     properties (SetObservable = true)
         INPUTS
+        RootPath = 'C:\sourcecode\selfBuild\'
         Name = 'The Willows - Highfields Caldecote';
         BuildRoute = 'D';
         AT_FloorArea = 120;
@@ -90,7 +91,12 @@ classdef BuildCosts_withAdj < handle
            %%
            close all
            clear classes
-           obj = BuildCosts_withAdj();
+           obj = BuildCosts_withAdj('RootPath','C:\git\self-build-tools\');
+           obj
+           obj.RUN
+           obj
+           
+           %%
            ObjectInspector(obj);           
         end
         function RUN(obj)
@@ -175,7 +181,7 @@ classdef BuildCosts_withAdj < handle
     end
     methods (Hidden = true)
         function LoadBuildDetails(obj,Name)
-           text = obj.ReadFileByLine(['C:\sourcecode\selfBuild\BuildCosts\BuildCostTables\BuildDetials\',Name,'.m'])
+           text = obj.ReadFileByLine([obj.RootPath,'BuildCostTables\BuildDetials\',Name,'.m'])
            x = size(text,1)
            for i = 1:x
               string = text{i};
@@ -193,8 +199,12 @@ classdef BuildCosts_withAdj < handle
                 disp(['File not found: ',Name])
             end           
         end
-        function obj = BuildCosts_withAdj()
-           obj.AT_OBJ = BuildCosts();
+        function obj = BuildCosts_withAdj(varargin)
+           x = size(varargin,2);
+           for i = 1:2:x
+               obj.(varargin{i}) = varargin{i+1};
+           end
+           obj.AT_OBJ = BuildCosts('RootPath',obj.RootPath);
            obj.Facing_OBJ = FacingMaterial_Adj;
            obj.Roofing_OBJ = RoofingMaterial_Adj;
            obj.Sloping_OBJ = SlopingSite_Adj;
