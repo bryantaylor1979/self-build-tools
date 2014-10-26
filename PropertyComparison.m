@@ -32,6 +32,9 @@ classdef PropertyComparison <  handle
             obj.RUN()
             obj.DATASET
             %%
+            close all
+            clear classes
+            obj = PropertyComparison('RootPath','C:\git\self-build-tools\')
             ObjectInspector(obj)
         end
         function RUN(obj)
