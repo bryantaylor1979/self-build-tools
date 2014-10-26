@@ -10,6 +10,7 @@ classdef PropertyComparison <  handle
         EstimateProjectBudget
         FilterOnAvailable = 'yes';
         BuildCost_BuildRoute = 'D';
+        Progress = [0,10];
         DATASET = dataset([])
         LUT_OBJ
         MortgageEstimator_OBJ
@@ -27,8 +28,9 @@ classdef PropertyComparison <  handle
             %%
             close all
             clear classes
-            %%
             obj = PropertyComparison('RootPath','C:\git\self-build-tools\')
+            obj.RUN()
+            obj.DATASET
             %%
             ObjectInspector(obj)
         end
@@ -81,6 +83,8 @@ classdef PropertyComparison <  handle
             x = size(PropertyNames,1);
             y = size(NAMES,1);
             for i = 1:x
+                obj.Progress = [i,x];
+                drawnow;
                 obj.LUT_OBJ.Name = obj.LUT_OBJ.Name_LUT{i};
                 obj.LUT_OBJ.RUN();  
                 for j = 1:y
