@@ -30,8 +30,10 @@ classdef BuildCosts <  handle
             %%
             close all
             clear classes
+            
+            %%
             obj = BuildCosts
-            ObjectInspector(obj)
+            obj.RUN()
         end
         function RUN(obj)
             %%
@@ -75,10 +77,11 @@ classdef BuildCosts <  handle
             Val = obj.ExtractBasedStandard(DATA3,ExpectedLevelOfSpecification);            
         end
         function raw = ReadXLS(obj,filename)
+            FILE = fullfile(obj.RootPath,'BuildCostTables','SubComponets',filename);
             try
-            [raw] =  xlsread(   [obj.RootPath,'BuildCostTables\SubComponets\',obj.filename] );
+            [raw] =  xlsread(  FILE  );
             catch
-            [raw] =  xlsread(   [obj.RootPath,'BuildCostTables\SubComponets\',obj.filename(1:end-1)] );    
+            [raw] =  xlsread(  FILE(1:end-1) );    
             end
         end
         function [Range, RangeDATA] = ExtractFloorRange(obj,singlestorey,FloorArea)
@@ -88,19 +91,16 @@ classdef BuildCosts <  handle
             Range3 = singlestorey(11,1:2);
             Range3(2) = Inf;
             if and(Range1(1) < FloorArea, Range1(2) > FloorArea)
-               disp('range 1')
                Range = 1;
                RangeDATA = singlestorey(1:4,4:end);
                return
             end
             if and(Range2(1) < FloorArea, Range2(2) > FloorArea)
-               disp('range 2')
                Range = 2;
                RangeDATA = singlestorey(6:9,4:end);
                return
             end
             if and(Range3(1) < FloorArea, Range3(2) > FloorArea)
-                disp('range 3')
                RangeDATA = singlestorey(11:14,4:end);
                Range = 3;
                return

@@ -1,104 +1,64 @@
-classdef PropertySummary < handle
-    % PROPERTYSUMMARY
-    % ===============
-    %
-    % Summary of cost of a single plot
-    % All plots that have been registered are available. (Look at
-    % Avalaible property) 
-    %
-    % Properties
-    % Contingency:  Add contigency into the plan
-    % LandCost:     Price of the land
-    % SalePrice:    Price predicted to sell when completed to plans
-    % Distance:     Distance from work
-    % Margin_Perc:  Calculated margin
-    % Profit_Pounds:Predicted Profit in the project.
-    % ProjectCost:  Total cost of Build + Land + Extras
-    % BuildCost:    The total cost of the building
-    % ExtraCosts:   Any Extra Cost
-    %
-    % Sub Componets: ProjectCostEstimater, PropertiesDetails_LUT
-    properties (SetObservable = true)
-        INPUTS
-        RootPath = 'C:\git\self-build-tools\'
-        Name = 'Isaacson Road - Burwell';
-        Contingency = 0.06; %NOT linked.
-        OUTPUTS
-        Available
-        LandCost = 130000
-        SalePrice = 400000
-        Distance
-        Margin_Perc
-        Profit_Pounds
-        ProjectCost
-        BuildCost
-        ExtraCosts
-        OBJECTS
-        ProjectCost_OBJ
-        PropertiesDetails_LUT
+function struct = PropertySummary(varargin)
+    Name = varargin{1};
+    
+    % defaults
+    args.RootPath = '/home/imagequality/self-build-tools'
+    args.Contingency = 0.06; %NOT linked.
+    
+    % optional inputs overwrites
+    varargin = varargin(2:end);
+    x = size(varargin,2);
+    for i = 1:2:x
+       args.(varargin{i}) = varargin{i+1};
     end
-    properties (Hidden = true, SetObservable = true)
-        Name_LUT = [];        
+    
+    
+    %%
+    landdetails = PropertiesDetails(Name);
+    
+    struct.Name = Name;
+    struct.SalePrice = landdetails.SalePrice;
+    struct.LandCost = landdetails.Price;
+    struct.Available = landdetails.Available;
+    struct.ExtraCosts = landdetails.AddtionalRequiredCosts;
+    struct.Distance = landdetails.Distance;
+    
+    %%
+    ProjectCost_OBJ = ProjectCostEstimater( 'RootPath', args.RootPath, ...
+                                            'SalePrice',landdetails.SalePrice, ...
+                                            'LandCost', landdetails.Price, ...
+                                            'ExtraCost',landdetails.AddtionalRequiredCosts)
+    ProjectCost_OBJ.Name = Name;
+    ProjectCost_OBJ.Contingency = args.Contingency;
+    ProjectCost_OBJ.RUN();
+    struct.Margin_Perc = ProjectCost_OBJ.Margin_Perc;
+    struct.Profit_Pounds = ProjectCost_OBJ.Profit_Pounds;
+    struct.ProjectCost = ProjectCost_OBJ.ProjectCost;
+    struct.BuildCost = round(ProjectCost_OBJ.BuildCost);
+    struct.TargetLandCost = ProjectCost_OBJ.TargetLandCost;
+
+end
+function LandDetails = CalcPlotSize(obj,LandDetails)
+    if not(isnan(LandDetails.Dimensions_Meters(1)))
+        LandDetails.PlotArea = round(LandDetails.Dimensions_Meters(1)*LandDetails.Dimensions_Meters(2));
     end
-    methods 
-        function Example(obj)
-            %%
-            close all
-            clear classes
-            obj = PropertySummary('RootPath','C:\git\self-build-tools\')
-            obj.RUN()
-            
-            %%
-            ObjectInspector(obj)
-        end
-        function RUN(obj)
-            %%
-            obj.PropertiesDetails_LUT.Name = obj.Name;
-            obj.PropertiesDetails_LUT.RUN();
-            obj.SalePrice = obj.PropertiesDetails_LUT.SalePrice;
-            obj.LandCost = obj.PropertiesDetails_LUT.Price;
-            obj.Available = obj.PropertiesDetails_LUT.Available;
-            obj.ExtraCosts = obj.PropertiesDetails_LUT.AddtionalRequiredCosts;
-            %%
-            obj.Distance = obj.PropertiesDetails_LUT.Distance;
-            obj.ProjectCost_OBJ.Name = obj.Name;
-            obj.ProjectCost_OBJ.Contingency = obj.Contingency;
-            obj.ProjectCost_OBJ.LandCost = obj.LandCost;
-            obj.ProjectCost_OBJ.SalePrice = obj.SalePrice;
-            obj.ProjectCost_OBJ.ExtraCost = obj.PropertiesDetails_LUT.AddtionalRequiredCosts;
-            obj.ProjectCost_OBJ.RUN();
-            obj.Margin_Perc = obj.ProjectCost_OBJ.Margin_Perc;
-            obj.Profit_Pounds = obj.ProjectCost_OBJ.Profit_Pounds;
-            obj.ProjectCost = obj.ProjectCost_OBJ.ProjectCost;
-            obj.BuildCost = round(obj.ProjectCost_OBJ.BuildCost);
-            
-        end
-    end
-    methods (Hidden = true)
-        function obj = PropertySummary(varargin)
-            %%
-            x = size(varargin,2);
-            for i = 1:2:x
-               obj.(varargin{i}) = varargin{i+1};
-            end
-           
-            %%
-            obj.ProjectCost_OBJ = ProjectCostEstimater('RootPath',obj.RootPath);
-            obj.PropertiesDetails_LUT = PropertiesDetails_LUT;
-            obj.Name_LUT = obj.PropertiesDetails_LUT.Name_LUT;
-        end
-        function LandDetails = CalcPlotSize(obj,LandDetails)
-            if not(isnan(LandDetails.Dimensions_Meters(1)))
-                LandDetails.PlotArea = round(LandDetails.Dimensions_Meters(1)*LandDetails.Dimensions_Meters(2));
-            end
 %             LandDetails.BuildCost_HouseFloorArea = round(LandDetails.BuildCost_HouseFloorArea);
-            LandDetails.Dimensions_Meters = round(LandDetails.Dimensions_Meters.*10)./10;
-            
-            obj.OBJ_BC_Adj.Name = LandDetails.Name;
-            obj.OBJ_BC_Adj.RUN();
-            LandDetails.BuildCost_TotalCost = obj.OBJ_BC_Adj.Total_BuildCost;
-            
-            LandDetails.PoundsPerSqM = LandDetails.Price/LandDetails.PlotArea;
-        end
-    end
+    LandDetails.Dimensions_Meters = round(LandDetails.Dimensions_Meters.*10)./10;
+
+    obj.OBJ_BC_Adj.Name = LandDetails.Name;
+    obj.OBJ_BC_Adj.RUN();
+    LandDetails.BuildCost_TotalCost = obj.OBJ_BC_Adj.Total_BuildCost;
+
+    LandDetails.PoundsPerSqM = LandDetails.Price/LandDetails.PlotArea;
+end
+function Example(obj)
+    %%
+    close all
+    clear classes
+    
+    %%
+    struct = PropertySummary('Mustills Lane - New')
+    
+   %%
+    struct = PropertySummary('Mustills Lane - Longstanton Rd - Over - Cambs')
 end

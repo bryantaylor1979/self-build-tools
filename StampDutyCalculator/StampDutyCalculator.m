@@ -17,7 +17,7 @@ classdef StampDutyCalculator <  handle
     % time buyers designed to help boost the housing market and to make it 
     % less expensive for individuals to step onto the property ladder.
     % Effective from April 2010 for two years, stamp duty was waived for 
-    % first time buyers for property transactions under £250,000. The new 
+    % first time buyers for property transactions under ï¿½250,000. The new 
     % first time buyer rate was a temporary measure and was withdrawn on 
     % 24th March 2012.
     %
@@ -27,9 +27,9 @@ classdef StampDutyCalculator <  handle
     % To finance the cut in the stamp duty rate for first time buyers, the 
     % government  increased the rate for more expensive homes. A newer 
     % higher stamp duty rate of 5% was be introduced from April 2011 for 
-    % property being sold for over £1 Million. After the 2012 budget the 
+    % property being sold for over ï¿½1 Million. After the 2012 budget the 
     % highest rate of 7% has been introduced for property transactions 
-    % exceeding £2 Million.
+    % exceeding ï¿½2 Million.
     %
     %
     % Stamp duty rates in disadvantaged areas
@@ -40,7 +40,7 @@ classdef StampDutyCalculator <  handle
     % must be made on or before 5 May 2014.
     %
     % If a property qualifies for SDLT relief and  is sold for less than 
-    % £150,000 then no stamp duty is payable. Please see the table below 
+    % ï¿½150,000 then no stamp duty is payable. Please see the table below 
     % for more information.
     %
     %
@@ -48,8 +48,8 @@ classdef StampDutyCalculator <  handle
     %
     % In October 2007 the government introduced an SDLT exemption for 
     % homes which have minimal impact on the environment. Zero carbon 
-    % homes under £500,000 are now exempt from SDLT, and zero carbon 
-    % homes bought for over £500,000 will have a reduced SDLT liability.
+    % homes under ï¿½500,000 are now exempt from SDLT, and zero carbon 
+    % homes bought for over ï¿½500,000 will have a reduced SDLT liability.
     %
     % To qualify for SDLT exemption, a house needs to be built to high 
     % standards with superior insulation and will normally incorporate a 
@@ -69,7 +69,7 @@ classdef StampDutyCalculator <  handle
         Area_LUT = {    'Normal'; ...
                         'Disadvantaged'};
     end
-    %TODO: £2,000,001 and over (purchased by companies collective
+    %TODO: ï¿½2,000,001 and over (purchased by companies collective
     %investment schemes and partnerships). Rate is 15%
     methods
         function Example(obj)
@@ -82,7 +82,7 @@ classdef StampDutyCalculator <  handle
         function RUN(obj)
             %%
             if strcmpi(obj.Area,'Normal')
-                DATASET = obj.Normal_LUT
+                DATASET = obj.Normal_LUT;
             else
                 DATASET = obj.DisAdv_LUT;
             end

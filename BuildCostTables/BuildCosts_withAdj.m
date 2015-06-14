@@ -31,8 +31,6 @@ classdef BuildCosts_withAdj < handle
 %         RoofSpace = 60;
 %         RoofSpace_Factor = 0.7;
 %         UsingRoofSpace = 'no';
-          
-        
         
         OBJECTS
         AT_OBJ
@@ -181,8 +179,9 @@ classdef BuildCosts_withAdj < handle
     end
     methods (Hidden = true)
         function LoadBuildDetails(obj,Name)
-           text = obj.ReadFileByLine([obj.RootPath,'BuildCostTables\BuildDetials\',Name,'.m'])
-           x = size(text,1)
+           filename = fullfile(obj.RootPath,'BuildCostTables','BuildDetials',[Name,'.m']);
+           text = obj.ReadFileByLine(filename);
+           x = size(text,1);
            for i = 1:x
               string = text{i};
               try

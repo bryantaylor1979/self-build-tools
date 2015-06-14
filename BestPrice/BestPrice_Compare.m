@@ -38,7 +38,7 @@ classdef BestPrice_Compare < handle
             close all
             clear classes
             obj = BestPrice_Compare();
-            ObjectInspector(obj)
+            obj.RUN()
         end
         function RUN(obj)
             %% Target

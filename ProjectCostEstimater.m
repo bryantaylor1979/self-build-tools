@@ -65,7 +65,7 @@ classdef ProjectCostEstimater < handle
             obj.StampDuty = obj.StampDutyCalculator_OBJ.StampDuty;
 
             obj.ProjectCost = round((obj.BuildCost)*(1 + obj.Contingency) + obj.LandCost + obj.StampDuty + obj.ExtraCost);
-            obj.Profit_Pounds = obj.SalePrice - obj.ProjectCost;
+            obj.Profit_Pounds = obj.SalePrice - obj.ProjectCost
             obj.Margin_Perc = round(obj.Profit_Pounds/obj.ProjectCost*100);
             obj.TargetProfit_Pounds = round(obj.SalePrice - obj.SalePrice/(1+obj.TargetMargin));
             obj.TargetLandCost = round(obj.SalePrice - obj.BuildCost*(1+obj.Contingency) - obj.TargetProfit_Pounds);
